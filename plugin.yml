@@ -2,6 +2,7 @@ name: OrePlus
 main: com.gmail.jaquadro.oreplus.OrePlus
 version: 2.0
 author: UltraMCPro, jaquadro
+description: OrePlus is a Bukkit server plugin that modifies the amount of ore generated in the world when new chunks are created.
 website: http://dev.bukkit.org/bukkit-plugins/oreplus/ | www.UltraMCPro.com
 load: startup
 
@@ -10,3 +11,8 @@ commands:
         usage: /<command>
         aliases: [opl, oplus, orep]
         description: OrePlus Command.
+
+permissions:
+    oreplus.command.use:
+        description: Permission for OrePlus Command
+        default: true
