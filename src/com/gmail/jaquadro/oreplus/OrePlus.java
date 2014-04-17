@@ -23,6 +23,7 @@ public class OrePlus extends JavaPlugin
         //Added by UltraMCPro
         Bukkit.getServer().getLogger().info("OrePlus v" + this.getDescription().getVersion() + " has been enabled");
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
+        this.getCommand("oreplus").setExecutor(new OrePlusCommand(this));
         
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new OPListener(this), this);
