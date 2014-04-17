@@ -12,6 +12,9 @@ public class OrePlusCommand extends JavaPlugin{
 
 		public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String []args) {
                 if (cmd.getName().equalsIgnoreCase("oreplus")) {
+                    if (!sender.hasPermission("oreplus.command.use")) {
+                        sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_RED + "You don't have permission for this command!");
+                         return true;
                        
                         Player player = (Player) sender;
                        
