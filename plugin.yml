@@ -2,4 +2,11 @@ name: OrePlus
 main: com.gmail.jaquadro.oreplus.OrePlus
 version: 2.0
 author: UltraMCPro, jaquadro
+website: http://dev.bukkit.org/bukkit-plugins/oreplus/ | www.UltraMCPro.com
 load: startup
+
+commands:
+    oreplus:
+        usage: /<command>
+        aliases: [opl, oplus, orep]
+        description: OrePlus Command.
