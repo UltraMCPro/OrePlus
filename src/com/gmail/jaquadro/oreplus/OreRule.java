@@ -20,6 +20,11 @@ public class OreRule
 
     private List<Biome> _includedBiomes;
 
+
+    public void onEnable() {
+        Bukkit.getServer().getLogger().info("OrePlus v" + this.getDescription().getVersion() + " has been enabled");
+        Bukkit.getServer().getPluginManager().registerEvents(this, this);
+    }
     public OreRule (ConfigurationSection config) {
         _material = new OPMaterial(config.getString("block", ""));
 
