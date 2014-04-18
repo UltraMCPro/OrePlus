@@ -1,13 +1,16 @@
 package com.gmail.jaquadro.oreplus;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.generator.BlockPopulator;
-
-import java.util.*;
 
 public class OrePopulator extends BlockPopulator {
     private OrePlus _plugin;
@@ -97,7 +100,8 @@ public class OrePopulator extends BlockPopulator {
         _stackDepth--;
     }
 
-    private void applyClearRules (World world, Chunk chunk)
+    @SuppressWarnings("deprecation")
+	private void applyClearRules (World world, Chunk chunk)
     {
         _stackDepth++;
         //_plugin.getLogger().info("Clear chunk " + chunk.getX() + "," + chunk.getZ() + "; depth: " + _stackDepth);
@@ -147,7 +151,8 @@ public class OrePopulator extends BlockPopulator {
         _stackDepth--;
     }
 
-    private void generate (World world, Random rand, int x, int y, int z, int size, OPMaterial material)
+    @SuppressWarnings("deprecation")
+	private void generate (World world, Random rand, int x, int y, int z, int size, OPMaterial material)
     {
         double rpi = rand.nextDouble() * Math.PI;
 
