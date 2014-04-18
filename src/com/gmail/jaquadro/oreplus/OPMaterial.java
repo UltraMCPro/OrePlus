@@ -11,7 +11,8 @@ public class OPMaterial
     private int _id;
     private int _data;
 
-    public OPMaterial (String str) {
+    @SuppressWarnings("deprecation")
+	public OPMaterial (String str) {
         try {
             Material mat = Material.valueOf(str.toUpperCase());
             _id = mat.getId();
