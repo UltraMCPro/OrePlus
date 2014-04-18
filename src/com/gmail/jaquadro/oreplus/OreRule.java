@@ -93,7 +93,7 @@ public class OreRule
         List<Biome> result = new ArrayList<Biome>();
         if (biomes == null)
             return result;
-
+            
         for (String name : biomes) {
             try {
                 result.add(Biome.valueOf(name.toUpperCase()));
