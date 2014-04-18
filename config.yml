@@ -1,24 +1,36 @@
+############################################################
+# +------------------------------------------------------+ #
+# |      OrePlus created by UltraMCPro & jaquadro        | #
+# +------------------------------------------------------+ #
+############################################################
+
 default:
     verbose-startup: false
     generate:
+    
+    	#It helps to label them like this
+    	# Iron Ore
         - block: IRON_ORE
           enabled: true
           size: 8
           rounds: 3
           min-height: 0
           max-height: 64
+        #Gold Ore
         - block: GOLD_ORE
           enabled: true
           size: 8
           rounds: 2
           min-height: 0
           max-height: 32
+        #Diamond Ore
         - block: DIAMOND_ORE
           enabled: true
           size: 7
           rounds: 1
           min-height: 0
           max-height: 16
+        #Emerald Ore
         - block: EMERALD_ORE
           enabled: true
           size: 7
@@ -26,6 +38,7 @@ default:
           min-height: 0
           max-height: 16
           probability: 0.25
+          #Set what biomes the ore spawning can work in
           biomes: [EXTREME_HILLS, JUNGLE_HILLS]
     clear:
         - block: EMERALD_ORE
