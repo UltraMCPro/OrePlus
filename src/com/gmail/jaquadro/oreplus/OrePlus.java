@@ -1,15 +1,17 @@
 package com.gmail.jaquadro.oreplus;
 
-import org.bukkit.World;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrePlus extends JavaPlugin
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class OrePlus extends JavaPlugin implements Listener
 {
     private Configuration _config;
     private Map<World, List<OreRule>> _worldGenRules;
@@ -24,6 +26,9 @@ public class OrePlus extends JavaPlugin
         Bukkit.getServer().getLogger().info("OrePlus v" + this.getDescription().getVersion() + " has been enabled");
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("oreplus").setExecutor(new OrePlusCommand(this));
+        
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new OPListener(this), this);
