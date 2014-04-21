@@ -27,9 +27,6 @@ public class OrePlus extends JavaPlugin implements Listener
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("oreplus").setExecutor(new OrePlusCommand(this));
         
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-        
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new OPListener(this), this);
 
@@ -37,7 +34,7 @@ public class OrePlus extends JavaPlugin implements Listener
         _worldGenRules = new HashMap<World, List<OreRule>>();
         _worldClearRules = new HashMap<World, List<ClearRule>>();
 
-        saveDefaultConfig();
+        saveConfig();
     }
 
     @Override
