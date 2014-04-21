@@ -34,7 +34,7 @@ public class OrePlus extends JavaPlugin implements Listener
         _worldGenRules = new HashMap<World, List<OreRule>>();
         _worldClearRules = new HashMap<World, List<ClearRule>>();
 
-        saveConfig();
+        saveDefaultConfig();
     }
 
     @Override
