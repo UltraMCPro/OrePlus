@@ -43,7 +43,7 @@ public class OrePlusCommand extends JavaPlugin{
                                 if (args[0].equalsIgnoreCase("donate")) {
                                     player.sendMessage(ChatColor.BLUE + "--- OrePlus Donations ---");
                           	        player.sendMessage(ChatColor.AQUA + "Donations are used to help the release of our plugin (OrePlus)");
-                          	        player.sendMessage(ChatColor.AQUA + "Donations will be added with the update of 2.1");
+                          	        player.sendMessage(ChatColor.AQUA + "Donations will be added with the update of 1.2");
                           	        player.sendMessage(ChatColor.YELLOW + "Get more info but viewing the dev page http://dev.bukkit.org/bukkit-plugins/oreplus/");
                                   }
                            }
