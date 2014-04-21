@@ -1,224 +1,108 @@
 package com.gmail.jaquadro.oreplus;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
-
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.generator.BlockPopulator;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 
-public class OrePopulator extends BlockPopulator {
-    private OrePlus _plugin;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    private static int _stackDepth = 0;
+public class OreRule
+{
+    private boolean _enabled;
+    private OPMaterial _material;
+    private int _size;
+    private int _rounds;
+    private int _minHeight;
+    private int _maxHeight;
+    private double _prob;
 
-    private class DeferredGenerateTask {
-        private World _world;
-        private Random _random;
-        private int _cx;
-        private int _cz;
+    private List<Biome> _includedBiomes;
+    
+    public OreRule (ConfigurationSection config) {
+        _material = new OPMaterial(config.getString("block", ""));
 
-        public DeferredGenerateTask (World world, Random random, int cx, int cz) {
-            _world = world;
-            _random = random;
-            _cx = cx;
-            _cz = cz;
-        }
+        _enabled = config.getBoolean("enabled", true);
+        _size = config.getInt("size", 8);
+        _rounds = config.getInt("rounds", 1);
+        _minHeight = config.getInt("min-height", 0);
+        _maxHeight = config.getInt("max-height", 64);
+        _prob = config.getDouble("probability", 1.0);
 
-        public void execute() {
-            applyGenerateRules(_world, _random, _world.getChunkAt(_cx,  _cz));
-        }
+        _includedBiomes = processBiomeList(config.getStringList("biomes"));
     }
 
-    private Queue<DeferredGenerateTask> _deferredGenerateTasks;
+    @SuppressWarnings("unchecked")
+    public static List<OreRule> LoadFromList (List<Map<?, ?>> configList) {
+        List<OreRule> result = new ArrayList<OreRule>();
+        if (configList == null)
+            return result;
 
-    public OrePopulator (OrePlus plugin)
-    {
-        _plugin = plugin;
-        _deferredGenerateTasks = new LinkedList<DeferredGenerateTask>();
+        for (Map<?, ?> item : configList) {
+            Map<String, Object> castItem = (Map<String, Object>)item;
+
+            MemoryConfiguration config = new MemoryConfiguration();
+            config.addDefaults(castItem);
+            result.add(new OreRule(config.getDefaults()));
+        }
+
+        return result;
     }
 
-    @Override
-    public void populate(World world, Random random, Chunk chunk)
-    {
-        applyClearRules(world, chunk);
-        applyGenerateRules(world, random, chunk);
+    public static List<OreRule> LoadFromWorldConfig (ConfigurationSection worldConfig) {
+        if (!worldConfig.contains("generate"))
+            return new ArrayList<OreRule>();
+        else
+            return LoadFromList(worldConfig.getMapList("generate"));
+    }
 
-        if (_stackDepth == 0) {
-            while (_deferredGenerateTasks.size() > 0) {
-                DeferredGenerateTask task = _deferredGenerateTasks.remove();
-                task.execute();
+    public boolean isEnabled() {
+        return _enabled;
+    }
+
+    public OPMaterial getMaterial () {
+        return _material;
+    }
+
+    public int getSize () {
+        return _size;
+    }
+
+    public int getRounds () {
+        return _rounds;
+    }
+
+    public int getMinHeight () {
+        return _minHeight;
+    }
+
+    public int getMaxHeight () {
+        return _maxHeight;
+    }
+
+    public double getProbability() {
+        return _prob;
+    }
+
+    public List<Biome> getIncludedBiomes () {
+        return _includedBiomes;
+    }
+
+    private static List<Biome> processBiomeList (List<String> biomes) {
+        List<Biome> result = new ArrayList<Biome>();
+        if (biomes == null)
+            return result;
+
+        for (String name : biomes) {
+            try {
+                result.add(Biome.valueOf(name.toUpperCase()));
             }
-        }
-    }
-
-    private void applyGenerateRules (World world, Random random, Chunk chunk)
-    {
-        if (_stackDepth > 0) {
-            _deferredGenerateTasks.add(new DeferredGenerateTask(world, random, chunk.getX(), chunk.getZ()));
-            return;
-        }
-
-        _stackDepth++;
-        //_plugin.getLogger().info("Generate chunk " + chunk.getX() + "," + chunk.getZ() + "; depth: " + _stackDepth);
-
-        List<OreRule> rules = _plugin.GetOreRules(world);
-        if (rules == null)
-            return;
-
-        for (OreRule rule : rules) {
-            if (!rule.isEnabled())
+            catch (Exception e) {
                 continue;
-
-            OPMaterial material = rule.getMaterial();
-            if (!material.isBlockValid())
-                continue;
-
-            for (int i = 0; i < rule.getRounds(); i++) {
-                if (rule.getProbability() < random.nextDouble())
-                    continue;
-
-                int x = chunk.getX() * 16 + random.nextInt(16);
-                int y = rule.getMinHeight() + random.nextInt(rule.getMaxHeight() - rule.getMinHeight());
-                int z = chunk.getZ() * 16 + random.nextInt(16);
-
-                if (rule.getIncludedBiomes().size() > 0) {
-                    Biome biome = world.getBiome(x, z);
-                    if (!rule.getIncludedBiomes().contains(biome))
-                        continue;
-                }
-
-                generate(world, random, x, y, z, rule.getSize(), material);
-            }
-        }
-
-        _stackDepth--;
-    }
-
-    @SuppressWarnings("deprecation")
-	private void applyClearRules (World world, Chunk chunk)
-    {
-        _stackDepth++;
-        //_plugin.getLogger().info("Clear chunk " + chunk.getX() + "," + chunk.getZ() + "; depth: " + _stackDepth);
-
-        List<ClearRule> rules = _plugin.GetClearRules(world);
-        if (rules == null)
-            return;
-
-        for (ClearRule rule : rules) {
-            if (!rule.isEnabled())
-                continue;
-
-            OPMaterial material = rule.getMaterial();
-            if (!material.isBlockValid())
-                continue;
-
-            OPMaterial replacement = new OPMaterial(Material.STONE.getId());
-            if (rule.getClearMaterial().isBlockValid())
-                replacement = rule.getClearMaterial();
-
-            int starty = rule.getMinHeight();
-            int endy = rule.getMaxHeight();
-
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    if (rule.getIncludedBiomes().size() > 0) {
-                        Biome biome = world.getBiome(x, z);
-                        if (!rule.getIncludedBiomes().contains(biome))
-                            continue;
-                    }
-
-                    for (int y = starty; y < endy; y++) {
-                        Block block = chunk.getBlock(x, y, z);
-                        if (block.getTypeId() == material.getBlockId()) {
-                            if (material.isDataValid() && block.getData() != (byte)material.getBlockData())
-                                continue;
-
-                            block.setTypeId(replacement.getBlockId());
-                            if (replacement.isDataValid())
-                                block.setData((byte)replacement.getBlockData());
-                        }
-                    }
-                }
             }
         }
 
-        _stackDepth--;
-    }
-
-    @SuppressWarnings("deprecation")
-	private void generate (World world, Random rand, int x, int y, int z, int size, OPMaterial material)
-    {
-        double rpi = rand.nextDouble() * Math.PI;
-
-        double x1 = x + 8 + Math.sin(rpi) * size / 8.0F;
-        double x2 = x + 8 - Math.sin(rpi) * size / 8.0F;
-        double z1 = z + 8 + Math.cos(rpi) * size / 8.0F;
-        double z2 = z + 8 - Math.cos(rpi) * size / 8.0F;
-
-        double y1 = y + rand.nextInt(3) + 2;
-        double y2 = y + rand.nextInt(3) + 2;
-
-        for (int i = 0; i <= size; i++) {
-            double xPos = x1 + (x2 - x1) * i / size;
-            double yPos = y1 + (y2 - y1) * i / size;
-            double zPos = z1 + (z2 - z1) * i / size;
-
-            double fuzz = rand.nextDouble() * size / 16.0D;
-            double fuzzXZ = (Math.sin((float) (i * Math.PI / size)) + 1.0F) * fuzz + 1.0D;
-            double fuzzY = (Math.sin((float) (i * Math.PI / size)) + 1.0F) * fuzz + 1.0D;
-
-            int xStart = (int)Math.floor(xPos - fuzzXZ / 2.0D);
-            int yStart = (int)Math.floor(yPos - fuzzY / 2.0D);
-            int zStart = (int)Math.floor(zPos - fuzzXZ / 2.0D);
-
-            int xEnd = (int)Math.floor(xPos + fuzzXZ / 2.0D);
-            int yEnd = (int)Math.floor(yPos + fuzzY / 2.0D);
-            int zEnd = (int)Math.floor(zPos + fuzzXZ / 2.0D);
-
-            for (int ix = xStart; ix <= xEnd; ix++) {
-                double xThresh = (ix + 0.5D - xPos) / (fuzzXZ / 2.0D);
-                if (xThresh * xThresh < 1.0D) {
-                    for (int iy = yStart; iy <= yEnd; iy++) {
-                        double yThresh = (iy + 0.5D - yPos) / (fuzzY / 2.0D);
-                        if (xThresh * xThresh + yThresh * yThresh < 1.0D) {
-                            for (int iz = zStart; iz <= zEnd; iz++) {
-                                double zThresh = (iz + 0.5D - zPos) / (fuzzXZ / 2.0D);
-                                if (xThresh * xThresh + yThresh * yThresh + zThresh * zThresh < 1.0D) {
-                                    Block block = tryGetBlock(world, ix, iy, iz);
-                                    if (block != null && block.getType() == Material.STONE) {
-                                        block.setTypeId(material.getBlockId());
-                                        if (material.isDataValid())
-                                            block.setData((byte)material.getBlockData());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private Block tryGetBlock (World world, int x, int y, int z)
-    {
-        int cx = x >> 4;
-        int cz = z >> 4;
-
-        if (!world.isChunkLoaded(cx, cz)) {
-            if (!world.loadChunk(cx, cz, false))
-                return null;
-        }
-
-        Chunk chunk = world.getChunkAt(cx, cz);
-        if (chunk == null)
-            return null;
-
-        return chunk.getBlock(x & 15, y, z & 15);
+        return result;
     }
 }
