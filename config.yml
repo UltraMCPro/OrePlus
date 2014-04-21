@@ -43,7 +43,7 @@ default:
           #Set the biomes where ore can generate differently
           biomes: [EXTREME_HILLS, JUNGLE_HILLS]
           
-    #Here you can enable or disable the replacement of the ore generation you have set above  
+    #Here you can enable or disable ore generation for any block
     clear:
         - block: EMERALD_ORE
           enabled: false
