@@ -4,12 +4,14 @@
 # +------------------------------------------------------+ #
 ############################################################
 
+
+    #You can found a video about this plugin on http://bit.ly/SubUltra
+    #You can also subscribe for updates on the OrePlus project along side funny and amazing videos
+ 
 default:
     verbose-startup: false
-    generate:
-    
-    	#It helps to label them like this
-    	# Iron Ore
+    generate:   
+    	#Iron Ore
         - block: IRON_ORE
           enabled: true
           size: 8
@@ -38,8 +40,10 @@ default:
           min-height: 0
           max-height: 16
           probability: 0.25
-          #Set what biomes the ore spawning can work in
+          #Set the biomes where ore can generate differently
           biomes: [EXTREME_HILLS, JUNGLE_HILLS]
+          
+    #Here you can enable or disable the replacement of the ore generation you have set above  
     clear:
         - block: EMERALD_ORE
           enabled: false
