@@ -18,7 +18,7 @@ public class OrePlusCommand extends JavaPlugin{
                         Player player = (Player) sender;
                        
                         if (args.length == 0) {
-                        	player.sendMessage(ChatColor.DARK_RED + "---[" + ChatColor.RED + "OrePlus" + ChatColor.DARK_RED + "]---");
+                        	player.sendMessage(ChatColor.DARK_RED + "--- The OrePlus Project ---");
                                 player.sendMessage(ChatColor.DARK_PURPLE  + "Creators: " + ChatColor.LIGHT_PURPLE  + "UltraMCPro & jaquadro");
                                 player.sendMessage(ChatColor.DARK_PURPLE  + "Usage: " + ChatColor.LIGHT_PURPLE  + "/oreplus list");
                         	    player.sendMessage(ChatColor.DARK_PURPLE  + "Version: " + ChatColor.LIGHT_PURPLE  + this.getDescription().getVersion() );
